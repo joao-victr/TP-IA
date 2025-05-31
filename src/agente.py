@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 class Agente:
-    def __init__(self, ambiente, alpha=0.1, gamma=0.9, epsilon=0.1):
+    def __init__(self, ambiente, alpha=0.2, gamma=0.99, epsilon=0.1):
         self.ambiente = ambiente
         self.alpha = alpha
         self.gamma = gamma
@@ -22,22 +22,19 @@ class Agente:
     def atualizar_q(self, estado, acao, recompensa, proximo_estado):
         s = self._estado_para_str(estado)
         s_prime = self._estado_para_str(proximo_estado)
-
         if s not in self.q_table:
             self.q_table[s] = np.zeros(len(self.acoes))
         if s_prime not in self.q_table:
             self.q_table[s_prime] = np.zeros(len(self.acoes))
-
         q_atual = self.q_table[s][acao]
         q_max_prox = np.max(self.q_table[s_prime])
-
         self.q_table[s][acao] = q_atual + self.alpha * (recompensa + self.gamma * q_max_prox - q_atual)
 
     def treinar(self, episodios=1000):
         for ep in range(episodios):
             estado = self.ambiente.reset()
-            terminado = False
             total_recompensa = 0
+            terminado = False
 
             while not terminado:
                 acao = self.escolher_acao(estado)
@@ -45,10 +42,6 @@ class Agente:
                 self.atualizar_q(estado, acao, recompensa, novo_estado)
                 estado = novo_estado
                 total_recompensa += recompensa
-            # self.epsilon = max(0.15, self.epsilon * 0.995)
-
-            # if (ep + 1) % 100 == 0:
-            #     print(f"Episódio {ep + 1}: recompensa total = {total_recompensa}")
     print('Treinamento finalizado')
     def reset(self):
         self.q_table = {}

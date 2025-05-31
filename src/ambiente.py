@@ -9,7 +9,6 @@ class Ambiente:
         self.estado_atual = self.estado_inicial
         self.passo_atual = 0
         self.max_passos = 100
-        self.obj = (self.altura - 1, self.largura - 1)
 
     def _encontrar_inicio(self):
         for y in range(self.altura):
@@ -24,13 +23,9 @@ class Ambiente:
         return self.estado_atual
 
     def step(self, acao):
-        """
-        Ações:
-        0 = cima, 1 = baixo, 2 = esquerda, 3 = direita
-        """
+        # 0 = cima, 1 = baixo, 2 = esquerda, 3 = direita
         y, x = self.estado_atual
         self.passo_atual += 1
-
         if acao == 0:
             y -= 1
         elif acao == 1:
@@ -39,20 +34,19 @@ class Ambiente:
             x -= 1
         elif acao == 3:
             x += 1
-
         if y < 0 or y >= self.altura or x < 0 or x >= self.largura:
             return self.estado_atual, -10, self._verifica_objetivo()
 
         if self.mapa[y, x] == 1:
             self.estado_atual = (y, x)
             terminou = self._verifica_objetivo()
-            recompensa = 10 if terminou else -1
+            recompensa = 10 if terminou else -0.1
             return self.estado_atual, recompensa, terminou
         else:
-            return self.estado_atual, -10, self._verifica_objetivo()
+            return self.estado_atual, -5, self._verifica_objetivo()
 
     def _verifica_objetivo(self):
-        return self.estado_atual == self.obj
+        return self.estado_atual == self._encontrar_fim()
 
     def _encontrar_fim(self):
         for y in reversed(range(self.altura)):
